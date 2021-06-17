@@ -1,24 +1,26 @@
 package com.tylerlofgren.service
 
 import com.tylerlofgren.constant.QueryType
-import com.tylerlofgren.domain.Message
-import com.tylerlofgren.domain.QueryResult
+import com.tylerlofgren.domain.*
+import com.tylerlofgren.repo.MessageRepository
+import io.kotest.assertions.throwables.shouldNotThrowAny
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.data.blocking.forAll
 import io.kotest.data.row
 import io.kotest.matchers.shouldBe
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.hibernate.HibernateException
 
-class MessageServiceTest : StringSpec({
-
-    val validMessageOne = Message(1, 10, "aaa", 10, 10)
-    val validMessageTwo = Message(2, 20, "bbb", 20, 20)
-    val validMessageThree = Message(3, 40, "ccc", 30, 30)
-    val validMessageFour = Message(3, 50, "ddd", 31, 40)
-
-    lateinit var service: MessageService
+class MessageServiceImplTest : StringSpec({
+    lateinit var service: MessageServiceImpl
+    lateinit var messageRepository: MessageRepository
 
     beforeTest {
-        service = MessageService()
+        messageRepository = mockk(relaxed = true)
+        service = MessageServiceImpl(messageRepository)
     }
 
     "queryMessages" {
@@ -36,8 +38,23 @@ class MessageServiceTest : StringSpec({
                 row(QueryType.WEIGHTED_AVERAGE_TEMPERATURE, listOf(validMessageOne), 10L),
                 row(QueryType.WEIGHTED_AVERAGE_TEMPERATURE, listOf(validMessageOne, validMessageTwo, validMessageThree, validMessageFour), 29L)
         ) { queryType: QueryType, messages: List<Message>, expected: Long ->
-            val result = service.queryMessages(queryType, messages)
+            every { messageRepository.findBySymbol(symbolOne) } returns messages
+            val result = service.queryMessages(queryType, symbolOne)
             result shouldBe QueryResult(expected)
         }
+    }
+
+    "saveMessage - success" {
+        every { messageRepository.save(any()) } returns validMessageOne
+        val result = shouldNotThrowAny { service.saveMessage(validMessageOne) }
+        result shouldBe validMessageOne
+        verify(exactly = 1) { messageRepository.save(any()) }
+    }
+
+    "saveMessage - repo throws exception and it bubbles up" {
+        val expected = HibernateException("test")
+        every { messageRepository.save(any())} throws expected
+        val result = shouldThrow<HibernateException> { service.saveMessage(validMessageOne) }
+        result shouldBe expected
     }
 })

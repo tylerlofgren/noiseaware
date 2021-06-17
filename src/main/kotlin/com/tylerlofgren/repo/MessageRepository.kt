@@ -7,4 +7,5 @@ import io.micronaut.data.repository.CrudRepository
 @Repository
 interface MessageRepository : CrudRepository<Message, Long> {
     fun findBySymbol(symbol: String): List<Message>
+    fun save(message: Message): Message
 }

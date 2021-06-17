@@ -34,6 +34,8 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut.configuration:micronaut-hibernate-jpa:2.2.6")
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa:2.4.4")
+    implementation("io.micronaut.cache:micronaut-cache-caffeine:2.4.0")
+    implementation("io.github.microutils:kotlin-logging:1.11.0")
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -55,6 +57,11 @@ java {
 noArg {
     annotation("javax.persistence.Entity")
 }
+
+allOpen {
+    annotation("io.micronaut.aop.Around")
+}
+
 
 tasks {
     compileKotlin {
