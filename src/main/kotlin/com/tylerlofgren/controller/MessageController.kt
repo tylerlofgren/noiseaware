@@ -1,9 +1,10 @@
 package com.tylerlofgren.controller
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.tylerlofgren.constant.QueryType
 import com.tylerlofgren.domain.Message
+import com.tylerlofgren.domain.QueryResult
 import com.tylerlofgren.repo.MessageRepository
+import com.tylerlofgren.service.MessageService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.*
@@ -12,52 +13,21 @@ import javax.inject.Inject
 
 @Controller
 class MessageController(
-        @Inject val messageRepository: MessageRepository,
-        @Inject val objectMapper: ObjectMapper
+        @Inject val messageService: MessageService,
+        @Inject val messageRepository: MessageRepository
 ) {
     @Get("/messages", produces = [MediaType.APPLICATION_JSON])
-    fun listMessages(@QueryValue symbol: String?, @QueryValue queryType: QueryType?): Single<HttpResponse<String>> {
-        if (queryType != null) {
-            if(symbol == null) {
-                return Single.just(HttpResponse.badRequest())
-            }
-            return Single.just(HttpResponse.ok(objectMapper.writeValueAsString(
-                    when (queryType) {
-                        QueryType.MAX_TIME_GAP -> getMaxTimeGap(symbol)
-                        QueryType.TOTAL_VOLUME -> getTotalVolume(symbol)
-                        QueryType.MAX_TEMPERATURE -> getMaxTemp(symbol)
-                        QueryType.WEIGHTED_AVERAGE_TEMPERATURE -> getWeightedAvgTemp(symbol)
-                    }
-            )))
-        } else {
-            if(symbol != null) {
-                return Single.just(HttpResponse.ok(objectMapper.writeValueAsString(messageRepository.findBySymbol(symbol))))
-            }
+    fun listMessages(@QueryValue symbol: String?, @QueryValue queryType: QueryType?): Single<HttpResponse<QueryResult>> {
+        if (queryType == null || symbol == null) {
+            return Single.just(HttpResponse.badRequest())
         }
-        return Single.just(HttpResponse.ok(objectMapper.writeValueAsString(messageRepository.findAll().toList())))
-    }
 
-    data class QueryResult(val result: Long)
-
-    private fun getMaxTimeGap(symbol: String): QueryResult {
-        return QueryResult(1)
-    }
-
-    private fun getTotalVolume(symbol: String): QueryResult {
-        return QueryResult(1)
-    }
-
-    private fun getMaxTemp(symbol: String): QueryResult {
-        return QueryResult(1)
-    }
-
-    private fun getWeightedAvgTemp(symbol: String): QueryResult {
-        return QueryResult(1)
+        return Single.just(HttpResponse.ok(messageService.queryMessages(queryType, messageRepository.findBySymbol(symbol)))) //TODO: Handle exceptions
     }
 
     @Post(value = "/messages", produces = [MediaType.APPLICATION_JSON], consumes = [MediaType.APPLICATION_JSON])
     fun postMessages(@Body body: Message): Single<HttpResponse<Message>> {
-        messageRepository.save(body)//Handle exceptions from here. Be sure to act differently if the symbol isn't found
+        messageRepository.save(body)//TODO: Handle exceptions from here. Be sure to act differently if the symbol isn't found
         return Single.just(HttpResponse.ok(body))
     }
 }

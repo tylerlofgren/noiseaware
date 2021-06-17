@@ -39,6 +39,9 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     runtimeOnly("com.h2database:h2:1.4.200")
     runtimeOnly("io.micronaut.configuration:micronaut-jdbc-hikari:2.2.6")
+
+
+    testImplementation("io.mockk:mockk:1.11.0")
 }
 
 
