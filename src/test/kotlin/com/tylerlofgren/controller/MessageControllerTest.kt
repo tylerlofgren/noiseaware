@@ -109,11 +109,33 @@ class MessageControllerTest(
         }
     }
 
+    "POST /messages - HTTP 400" {
+        val missingTimestamp = "{\"symbol\":\"aaa\",\"volume\":20,\"temperature\":15}"
+        val missingSymbol = "{\"timestamp\": 1,\"volume\":20,\"temperature\":15}"
+        val invalidSymbol = "{\"timestamp\": 1,\"symbol\":\"aaaa\",\"volume\":20,\"temperature\":15}"
+        val missingVolume = "{\"timestamp\": 1,\"symbol\":\"aaa\",\"temperature\":15}"
+        val missingTemperature  = "{\"timestamp\": 1,\"symbol\":\"aaa\",\"volume\":20}"
+        forAll(
+            row(missingTimestamp),
+            row(missingSymbol),
+            row(invalidSymbol),
+            row(missingVolume),
+            row(missingTemperature)
+        ) { body ->
+            val response = shouldThrow<HttpClientResponseException> {
+                client.toBlocking().exchange<String, String>(
+                    HttpRequest.POST("/messages", body)
+                )
+            }
+            response.status shouldBe HttpStatus.BAD_REQUEST
+        }
+    }
+
     "POST /messages - error occurs in service" {
         val mockService = getMock(messageService)
         every { mockService.queryMessages(QueryType.MAX_TIME_GAP, symbolOne) } throws HibernateException("test")
         val response = shouldThrow<HttpClientResponseException> {
-            client.toBlocking().exchange<Any, QueryResult>(
+            client.toBlocking().exchange<Any, Message>(
                 HttpRequest.POST("/messages", validMessageOne)
             )
         }

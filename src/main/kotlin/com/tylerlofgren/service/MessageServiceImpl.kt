@@ -21,12 +21,12 @@ open class MessageServiceImpl(
         return QueryResult(
                 when (queryType) {
                     QueryType.MAX_TIME_GAP -> getMaxTimeGap(messages)
-                    QueryType.TOTAL_VOLUME -> messages.sumOf { it.volume }.toLong()
+                    QueryType.TOTAL_VOLUME -> messages.sumOf { it.volume!! }.toLong()
                     QueryType.MAX_TEMPERATURE -> {
                         if (messages.isEmpty()) {
                             0
                         } else {
-                            messages.maxOf { it.temperature }.toLong()
+                            messages.maxOf { it.temperature!! }.toLong()
                         }
                     }
                     QueryType.WEIGHTED_AVERAGE_TEMPERATURE -> getWeightedAvgTemp(messages).toLong()
@@ -44,7 +44,7 @@ open class MessageServiceImpl(
             if (i == 0) {
                 return@forEachIndexed
             }
-            val currentGap = message.timestamp - chronologicalMessages[i - 1].timestamp
+            val currentGap = message.timestamp!! - chronologicalMessages[i - 1].timestamp!!
             if (currentGap > maxTimeGap) {
                 maxTimeGap = currentGap
             }
@@ -57,7 +57,7 @@ open class MessageServiceImpl(
         if (messages.isEmpty()) {
             return 0
         }
-        return messages.sumOf { it.volume * it.temperature }.div(messages.sumOf { it.volume })
+        return messages.sumOf { it.volume!! * it.temperature!! }.div(messages.sumOf { it.volume!! })
     }
 
     override fun saveMessage(message: Message): Message {

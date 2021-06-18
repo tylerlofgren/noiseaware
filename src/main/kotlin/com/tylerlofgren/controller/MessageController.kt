@@ -10,6 +10,7 @@ import io.micronaut.http.annotation.*
 import io.reactivex.Single
 import mu.KotlinLogging
 import javax.inject.Inject
+import javax.validation.Valid
 
 @Controller
 open class MessageController(
@@ -37,7 +38,7 @@ open class MessageController(
     }
 
     @Post(value = "/messages", produces = [MediaType.APPLICATION_JSON], consumes = [MediaType.APPLICATION_JSON])
-    fun postMessages(@Body body: Message): Single<HttpResponse<Message>> {
+    open fun postMessages(@Valid @Body body: Message): Single<HttpResponse<Message>> {
         try {
             messageService.saveMessage(body)
         } catch(e: Exception) {
