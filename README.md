@@ -1,14 +1,12 @@
 # NoiseAware Back-end Developer Assessment
 
----
-
 ## Prerequisites
 * Java 11: Using SDKMAN! `sdk install java 11.0.11.hs-adpt`
 * Docker: https://docs.docker.com/get-docker/
 * Minikube: Using Homebrew `brew install minikube`
 
 ## Getting started
-___
+
 ### Running tests
 To run the test suite execute `./gradlew test` 
 
