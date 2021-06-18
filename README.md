@@ -24,6 +24,8 @@ From root project directory
 ## Examples
 POST pump message: `curl -X POST -H "Content-Type: application/json" -d '{"timestamp": 1,"symbol":"aaa","volume":20,"temperature":15}' 'localhost:8080/messages'`
 
+Optionally, load the provided sample .csv file via a script(set to silent mode to not overload your terminal window... live and learn :facepalm): `./upload_all.sh` 
+
 Query messages for pump: `curl 'localhost:8080/messages?queryType=TOTAL_VOLUME&symbol=aaa'`
 
 Query type is specified using a query parameter with applicable values being(case insensitive): `MAX_TIME_GAP, TOTAL_VOLUME, MAX_TEMPERATURE, WEIGHTED_AVERAGE_TEMPERATURE`
