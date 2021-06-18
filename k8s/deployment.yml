@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: noiseaware-deployment
+  labels:
+    app: noiseaware
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: noiseaware
+  template:
+    metadata:
+      labels:
+        app: noiseaware
+    spec:
+      containers:
+        - name: noiseaware
+          image: noiseaware:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
