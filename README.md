@@ -30,4 +30,4 @@ Query messages for pump: `curl 'localhost:8080/messages?queryType=TOTAL_VOLUME&s
 
 Query type is specified using a query parameter with applicable values being(case insensitive): `MAX_TIME_GAP, TOTAL_VOLUME, MAX_TEMPERATURE, WEIGHTED_AVERAGE_TEMPERATURE`
 
-**Note: both `queryType` and `symbol` must be provided for the GET /messages endpoint or else an HTTP 400 will be returned**
+**Note: both `queryType` and `symbol` query parameters must be provided for the GET /messages endpoint or else an HTTP 400 will be returned**

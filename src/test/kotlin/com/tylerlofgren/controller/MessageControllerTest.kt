@@ -24,6 +24,7 @@ import io.micronaut.test.extensions.kotest.annotation.MicronautTest
 import io.mockk.every
 import io.mockk.mockk
 import org.hibernate.HibernateException
+import javax.management.Query
 
 
 @MicronautTest
@@ -37,12 +38,16 @@ class MessageControllerTest(
         val mockService = getMock(messageService)
 
         forAll(
-            row(QueryType.MAX_TIME_GAP),
-            row(QueryType.MAX_TEMPERATURE),
-            row(QueryType.TOTAL_VOLUME),
-            row(QueryType.WEIGHTED_AVERAGE_TEMPERATURE)
+            row(QueryType.MAX_TIME_GAP.name),
+            row(QueryType.MAX_TIME_GAP.name.toLowerCase()),
+            row(QueryType.MAX_TEMPERATURE.name),
+            row(QueryType.MAX_TEMPERATURE.name.toLowerCase()),
+            row(QueryType.TOTAL_VOLUME.name),
+            row(QueryType.TOTAL_VOLUME.name.toLowerCase()),
+            row(QueryType.WEIGHTED_AVERAGE_TEMPERATURE.name),
+            row(QueryType.WEIGHTED_AVERAGE_TEMPERATURE.name.toLowerCase())
         ) { queryType ->
-            every { mockService.queryMessages(queryType, symbolOne) } returns expected
+            every { mockService.queryMessages(any(), symbolOne) } returns expected
             val response = shouldNotThrowAny {
                 client.toBlocking().exchange<Any, QueryResult>(
                     HttpRequest.GET("/messages?symbol=$symbolOne&queryType=$queryType"),
