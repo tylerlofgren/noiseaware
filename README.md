@@ -1,11 +1,17 @@
 # NoiseAware Back-end Developer Assessment
 
-## Prerequisites
+## Stack
+* Language: Kotlin 1.4.32 
+* Application framework: [Micronaut 2.5.6](https://docs.micronaut.io/latest/guide/index.html)
+* Testing framework: [Kotest 4.3.0](https://kotest.io/docs/framework/framework.html) & [Mockk 1.11.0](https://mockk.io/)
+* Database: [H2](https://www.h2database.com/html/quickstart.html)
+
+## Getting started
+
+### Prerequisites(MacOS)
 * Java 11: Using SDKMAN! `sdk install java 11.0.11.hs-adpt`
 * Docker: https://docs.docker.com/get-docker/
 * Minikube: Using Homebrew `brew install minikube`
-
-## Getting started
 
 ### Running tests
 To run the test suite execute `./gradlew test` 
